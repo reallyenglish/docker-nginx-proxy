@@ -53,6 +53,12 @@ debug)
     shift
     config "$@"
     ;;
+rm) shift
+    rm "/etc/nginx/conf.d/$1.conf"
+    if ! pkill -HUP -F /var/run/nginx.pid ; then
+        echo "WARNING: there were validation errors."
+    fi
+    ;;
 "")
     echo "Usage:"
     echo "  cfg <debug> <configuration...>"
