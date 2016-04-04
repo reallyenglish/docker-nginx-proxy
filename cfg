@@ -40,7 +40,6 @@ EOF
 server {
 	server_name $HOSTNAME;
 	listen 80 ;
-	access_log /var/log/nginx/$HOSTNAME-access.log vhost;
 	location / {
 		proxy_pass http://$HOSTNAME;
 	}
