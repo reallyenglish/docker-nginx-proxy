@@ -1,0 +1,70 @@
+#!/bin/sh
+set -e
+
+# This is a workaround for systems that don't break the
+# container command line into separate arguments.
+# If the first argument passed to hamba contains a space,
+# we will re-execute ourselves to fix the problem.
+case "$1" in
+*\ *)
+    echo "First command-line argument contains a space."
+    echo "Re-execing ourselves to work around the issue."
+    exec $0 $*
+    ;;
+esac
+
+# Output a nginx vhost configuration.
+config () {
+    HOSTNAME="$1"
+
+    cat <<EOF
+upstream $HOSTNAME {
+EOF
+    # backend entries.
+    shift
+    while [ "$1" ]; do
+        case "$1" in
+        *:*)
+            echo "  server $1;"
+            shift
+            ;;
+        *)
+            echo "  server $1:80;"
+            shift
+            ;;
+        esac
+    done
+
+    cat <<EOF
+}
+server {
+	server_name $HOSTNAME;
+	listen 80 ;
+	access_log /var/log/nginx/$HOSTNAME-access.log vhost;
+	location / {
+		proxy_pass http://$HOSTNAME;
+	}
+}
+EOF
+}
+
+case "$1" in
+debug)
+    shift
+    config "$@"
+    ;;
+"")
+    echo "Usage:"
+    echo "  cfg <debug> <configuration...>"
+    echo "  cfg <configuration...>"
+    echo "Configuration is:"
+    echo "  [hostname] [backendaddr:backendport] [...]"
+    ;;
+*)
+    VHOST="$1"
+    config "$@" > "/etc/nginx/conf.d/$VHOST.conf"
+    if ! pkill -HUP -F /var/run/nginx.pid ; then
+        echo "WARNING: there were validation errors."
+    fi
+    ;;
+esac
