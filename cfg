@@ -16,9 +16,10 @@ esac
 # Output a nginx vhost configuration.
 config () {
     HOSTNAME="$1"
+    UPSTREAM=$(echo $HOSTNAME | tr '.-' '_')
 
     cat <<EOF
-upstream $HOSTNAME {
+upstream $UPSTREAM {
 EOF
     # backend entries.
     shift
@@ -41,7 +42,7 @@ server {
 	server_name $HOSTNAME;
 	listen 80 ;
 	location / {
-		proxy_pass http://$HOSTNAME;
+		proxy_pass http://$UPSTREAM;
 	}
 }
 EOF
