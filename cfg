@@ -39,11 +39,12 @@ EOF
     cat <<EOF
 }
 server {
-	server_name $HOSTNAME;
-	listen 80 ;
-	location / {
-		proxy_pass http://$UPSTREAM;
-	}
+  server_name $HOSTNAME;
+  listen 80 ;
+  location / {
+    proxy_next_upstream_timeout 5;
+    proxy_pass http://$UPSTREAM;
+  }
 }
 EOF
 }
