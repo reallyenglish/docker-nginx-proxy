@@ -1,4 +1,7 @@
-FROM nginx:1.11.1
+FROM nginx:1.15
 
-COPY default.conf /etc/nginx/conf.d/default.conf
-COPY cfg /usr/local/bin/cfg
+RUN rm /etc/nginx/*_params /etc/nginx/koi-* /etc/nginx/win-*
+
+COPY nginx.conf /etc/nginx/
+COPY default.conf /etc/nginx/conf.d/
+COPY 404.html 50x.html /usr/share/nginx/html/
