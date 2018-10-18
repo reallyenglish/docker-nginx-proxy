@@ -1,4 +1,4 @@
 ## Docker image for nginx reverse proxy
 
-- Custom made 50x page (Reallyenglish)
+- Custom maintenance page (Reallyenglish)
 - JSON log format definition
